@@ -1,0 +1,44 @@
+server:
+  port: 8080
+
+killbug:
+  features:
+    - name: "CHANGE"
+      linear-team-key: "CHANGE"
+      repository: "CHANGE"
+      fe-managers: []
+      be-managers:
+        - name: "CHANGE"
+          slack-id: "CHANGE"
+
+  slack:
+    api-url: "https://slack.com/api"
+    bug-channel-id: "CHANGE"
+    bot-token: ${SLACK_BOT_TOKEN:CHANGE}
+    signing-secret: ${SLACK_SIGNING_SECRET:CHANGE}
+
+  linear:
+    api-url: "https://api.linear.app/graphql"
+    api-key: ${LINEAR_API_KEY:CHANGE}
+    team-ids:
+      CHANGE: "CHANGE"
+    label-ids:
+      auto-fix: "CHANGE"
+      ai-generated: "CHANGE"
+    user-mappings:
+      CHANGE: "CHANGE"
+
+  worker:
+    url: "http://localhost:8081"
+
+  claude-code:
+    max-turns: 3
+    timeout-seconds: 120
+    analyze-prompt-template: |
+      
+
+  async:
+    core-pool-size: 4
+    max-pool-size: 8
+    queue-capacity: 50
+    thread-name-prefix: "webhook-"

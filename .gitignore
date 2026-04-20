@@ -1,0 +1,17 @@
+.DS_Store
+
+# Gradle
+.gradle/
+**/build
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# worktree 임시 디렉토리
+.worktree-*

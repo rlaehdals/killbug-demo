@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+worker:
+  repos-base-dir: "CHANGE"
+
+  routing:
+    CHANGE:
+      repository: "CHANGE"
+      local-path: "CHANGE"
+      base-branch: "CHANGE"
+
+  claude:
+    max-turns: 30
+    confidence-threshold: 0.8
+    timeout-seconds: 300
+    fix-prompt-template: |
+      
+
+  pr:
+    draft: true
+
+  linear:
+    api-url: "https://api.linear.app/graphql"
+    api-key: ${LINEAR_API_KEY:CHANGE}
+
+  slack:
+    api-url: "https://slack.com/api"
+    bot-token: ${SLACK_BOT_TOKEN:CHANGE}
+
+  github:
+    token: ${GH_TOKEN:CHANGE}
+
+  async:
+    core-pool-size: 2
+    max-pool-size: 4
+    queue-capacity: 20
+    thread-name-prefix: "worker-"
