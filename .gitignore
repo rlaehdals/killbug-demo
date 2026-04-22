@@ -15,3 +15,12 @@
 
 # worktree 임시 디렉토리
 .worktree-*
+
+# Claude 하네스 런타임 파일
+.claude/audit/
+.claude/.failing-tests
+.claude/.learnings
+.claude/.last-compile-check
+
+.claude/.edit-count
+test-harness.py

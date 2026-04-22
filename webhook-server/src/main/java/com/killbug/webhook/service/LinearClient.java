@@ -43,8 +43,7 @@ public class LinearClient {
                 "teamId", teamId,
                 "title", title,
                 "description", description,
-                "priority", priority
-        ));
+                "priority", priority));
 
         if (assigneeId != null) {
             input.put("assigneeId", assigneeId);
@@ -58,7 +57,8 @@ public class LinearClient {
             input.put("labelIds", labelIds);
         }
 
-        String query = """
+        String query =
+                """
                 mutation CreateIssue($input: IssueCreateInput!) {
                     issueCreate(input: $input) {
                         success
@@ -78,7 +78,8 @@ public class LinearClient {
     }
 
     public JsonNode findExistingTicket(String slackThreadTs) {
-        String query = """
+        String query =
+                """
                 query($term: String!) {
                     issueSearch(query: $term, filter: {
                         state: { type: { nin: ["completed", "canceled"] } }
@@ -98,7 +99,8 @@ public class LinearClient {
     }
 
     private JsonNode graphql(String query, Map<String, Object> variables) {
-        return restClient.post()
+        return restClient
+                .post()
                 .body(Map.of("query", query, "variables", variables))
                 .retrieve()
                 .body(JsonNode.class);

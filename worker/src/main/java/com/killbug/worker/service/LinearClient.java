@@ -30,17 +30,16 @@ public class LinearClient {
     }
 
     public void postComment(String issueId, String body) {
-        String query = """
+        String query =
+                """
                 mutation($input: CommentCreateInput!) {
                     commentCreate(input: $input) { success }
                 }
                 """;
 
-        restClient.post()
-                .body(Map.of(
-                        "query", query,
-                        "variables", Map.of("input", Map.of("issueId", issueId, "body", body))
-                ))
+        restClient
+                .post()
+                .body(Map.of("query", query, "variables", Map.of("input", Map.of("issueId", issueId, "body", body))))
                 .retrieve()
                 .body(JsonNode.class);
 

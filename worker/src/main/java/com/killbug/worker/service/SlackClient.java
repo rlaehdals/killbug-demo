@@ -23,13 +23,15 @@ public class SlackClient {
     void init() {
         restClient = RestClient.builder()
                 .baseUrl(properties.getSlack().getApiUrl())
-                .defaultHeader("Authorization", "Bearer " + properties.getSlack().getBotToken())
+                .defaultHeader(
+                        "Authorization", "Bearer " + properties.getSlack().getBotToken())
                 .defaultHeader("Content-Type", "application/json; charset=utf-8")
                 .build();
     }
 
     public void postMessage(String channel, String threadTs, String text) {
-        restClient.post()
+        restClient
+                .post()
                 .uri("/chat.postMessage")
                 .body(Map.of("channel", channel, "thread_ts", threadTs, "text", text))
                 .retrieve()

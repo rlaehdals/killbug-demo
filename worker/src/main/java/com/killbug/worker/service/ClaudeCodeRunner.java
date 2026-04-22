@@ -28,9 +28,9 @@ public class ClaudeCodeRunner {
                     "claude",
                     "--print",
                     "--dangerously-skip-permissions",
-                    "--max-turns", String.valueOf(properties.getClaude().getMaxTurns()),
-                    prompt
-            );
+                    "--max-turns",
+                    String.valueOf(properties.getClaude().getMaxTurns()),
+                    prompt);
             pb.directory(cwd);
             pb.environment().put("CLAUDE_CODE_HEADLESS", "1");
             pb.redirectInput(ProcessBuilder.Redirect.from(new File("/dev/null")));
@@ -43,11 +43,11 @@ public class ClaudeCodeRunner {
                     if (!err.isBlank()) {
                         log.warn("[claude] stderr: {}", err.trim());
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             });
 
-            boolean finished = process.waitFor(
-                    properties.getClaude().getTimeoutSeconds(), TimeUnit.SECONDS);
+            boolean finished = process.waitFor(properties.getClaude().getTimeoutSeconds(), TimeUnit.SECONDS);
 
             String output;
             if (!finished) {
@@ -68,7 +68,9 @@ public class ClaudeCodeRunner {
     public String buildPrompt(String title, String identifier, int priority, String description) {
         String cleanDesc = description.replaceAll("(?s)<details>.*?</details>", "");
 
-        return properties.getClaude().getFixPromptTemplate()
+        return properties
+                .getClaude()
+                .getFixPromptTemplate()
                 .replace("{title}", title)
                 .replace("{identifier}", identifier)
                 .replace("{priority}", String.valueOf(priority))

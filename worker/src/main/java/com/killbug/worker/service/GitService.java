@@ -27,8 +27,8 @@ public class GitService {
             int exitCode = process.waitFor();
 
             if (exitCode != 0) {
-                throw new RuntimeException("git %s failed (exit %d): %s".formatted(
-                        Arrays.toString(args), exitCode, output));
+                throw new RuntimeException(
+                        "git %s failed (exit %d): %s".formatted(Arrays.toString(args), exitCode, output));
             }
 
             return output;
@@ -45,8 +45,7 @@ public class GitService {
 
     public void createWorktree(File repoDir, String branchName, File worktreeDir, String baseBranch) {
         exec(repoDir, "fetch", "origin", baseBranch);
-        exec(repoDir, "worktree", "add", "-b", branchName,
-                worktreeDir.getAbsolutePath(), "origin/" + baseBranch);
+        exec(repoDir, "worktree", "add", "-b", branchName, worktreeDir.getAbsolutePath(), "origin/" + baseBranch);
     }
 
     public void removeWorktree(File repoDir, File worktreeDir) {

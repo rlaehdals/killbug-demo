@@ -3,28 +3,25 @@ package com.killbug.webhook.service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.killbug.webhook.config.KillbugProperties;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.killbug.webhook.config.KillbugProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LinearWebhookService {
 
-    private static final Pattern META_PATTERN_CHANNEL =
-            Pattern.compile("slack_channel:\\s*(\\S+)");
-    private static final Pattern META_PATTERN_THREAD =
-            Pattern.compile("slack_thread_ts:\\s*(\\S+)");
+    private static final Pattern META_PATTERN_CHANNEL = Pattern.compile("slack_channel:\\s*(\\S+)");
+    private static final Pattern META_PATTERN_THREAD = Pattern.compile("slack_thread_ts:\\s*(\\S+)");
 
     private final SlackClient slackClient;
     private final KillbugProperties properties;
-
 
     public void handle(JsonNode payload) {
         String action = payload.path("action").asText();
@@ -53,8 +50,7 @@ public class LinearWebhookService {
         String issueId = issue.path("identifier").asText();
         String commentBody = data.path("body").asText("");
 
-        slackClient.postMessage(channel, threadTs,
-                "\uD83E\uDD16 *%s* 작업 결과:\n\n%s".formatted(issueId, commentBody));
+        slackClient.postMessage(channel, threadTs, "\uD83E\uDD16 *%s* 작업 결과:\n\n%s".formatted(issueId, commentBody));
 
         log.info("[linear] → Slack 회신: {} → {}/{}", issueId, channel, threadTs);
 
@@ -66,13 +62,16 @@ public class LinearWebhookService {
     private void forwardToWorker(JsonNode payload) {
         String workerUrl = properties.getWorker().getUrl();
         try {
-            RestClient.create().post()
+            RestClient.create()
+                    .post()
                     .uri(workerUrl + "/linear/webhook")
                     .header("Content-Type", "application/json")
                     .body(payload)
                     .retrieve()
                     .toBodilessEntity();
-            log.info("[forward] Issue → worker: {}", payload.path("data").path("identifier").asText());
+            log.info(
+                    "[forward] Issue → worker: {}",
+                    payload.path("data").path("identifier").asText());
         } catch (Exception e) {
             log.error("[forward] worker 전달 실패 ({}): {}", workerUrl, e.getMessage());
         }

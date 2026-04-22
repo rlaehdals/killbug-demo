@@ -30,8 +30,7 @@ public class SlackCommandController {
     public Map<String, String> handleCommand(
             @RequestBody String rawBody,
             @RequestHeader(value = "X-Slack-Request-Timestamp", required = false) String timestamp,
-            @RequestHeader(value = "X-Slack-Signature", required = false) String signature
-    ) {
+            @RequestHeader(value = "X-Slack-Signature", required = false) String signature) {
         if (!slackEventService.verifySignature(rawBody, timestamp, signature)) {
             return Map.of("text", "서명 검증 실패");
         }
@@ -59,10 +58,7 @@ public class SlackCommandController {
         log.info("[slash] /killbug {} {} (channel={}, user={})", teamKey, alertId, channelId, userId);
         killbugService.processFromCommand(channelId, teamKey, alertId, memo, responseUrl, userId);
 
-        return Map.of(
-                "response_type", "ephemeral",
-                "text", "🔄 알림 `%s`를 처리 중입니다...".formatted(alertId)
-        );
+        return Map.of("response_type", "ephemeral", "text", "🔄 알림 `%s`를 처리 중입니다...".formatted(alertId));
     }
 
     private Map<String, String> parseFormUrlEncoded(String body) {
@@ -71,7 +67,6 @@ public class SlackCommandController {
                 .collect(Collectors.toMap(
                         p -> URLDecoder.decode(p[0], StandardCharsets.UTF_8),
                         p -> p.length > 1 ? URLDecoder.decode(p[1], StandardCharsets.UTF_8) : "",
-                        (a, b) -> b
-                ));
+                        (a, b) -> b));
     }
 }
