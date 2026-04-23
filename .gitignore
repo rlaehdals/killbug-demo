@@ -3,6 +3,7 @@
 # Gradle
 .gradle/
 **/build
+**/bin
 !gradle/wrapper/gradle-wrapper.jar
 
 # IDE
@@ -15,3 +16,9 @@
 
 # worktree 임시 디렉토리
 .worktree-*
+
+# 하네스 런타임 파일 (훅/에이전트 상태)
+.private/
+# 하네스 테스트 (로컬 전용)
+test-harness.py
+run-tests.sh

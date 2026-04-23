@@ -1,0 +1,58 @@
+{
+  "_comment": [
+    "역할 기반 접근 정책 (Role-Based Access Policy)",
+    "신원 확인: git config user.email → members 매핑 → 역할 결정",
+    "매핑에 없는 이메일은 기본값 junior (제한적)",
+    "환경: 로컬 컨테이너 (Docker Compose) + Java/Spring Boot"
+  ],
+
+  "members": {
+    "dongmin@example.com": "lead",
+    "senior-dev@example.com": "senior",
+    "junior-dev@example.com": "junior"
+  },
+
+  "default_role": "junior",
+
+  "allowed_tables": {
+    "junior": ["junior"],
+    "senior": ["junior", "senior"],
+    "lead": ["junior", "senior", "lead"]
+  },
+
+  "llm_blocked": {
+    "_comment": "외부 LLM(Claude API)으로 유출되면 안 되는 민감 데이터 패턴. 모든 역할에게 적용.",
+    "sensitive_columns": [
+      "password", "passwd", "secret", "token",
+      "ssn", "resident_number",
+      "credit_card", "card_number",
+      "phone", "phone_number", "전화번호",
+      "salary", "급여", "연봉",
+      "bank_account", "계좌번호"
+    ],
+    "sensitive_file_patterns": [
+      ".*customer.*\\.csv",
+      ".*payment.*\\.csv",
+      ".*salary.*",
+      ".*dump.*\\.sql"
+    ],
+    "sensitive_bash_patterns": [
+      "SELECT.*FROM.*(user|customer|payment|salary|account)",
+      "pg_dump",
+      "mysqldump",
+      "COPY.*TO.*STDOUT"
+    ]
+  },
+
+  "roles": {
+    "junior": {
+      "description": "주니어 개발자 — junior 테이블만 접근 가능."
+    },
+    "senior": {
+      "description": "시니어 개발자 — junior, senior 테이블 접근 가능."
+    },
+    "lead": {
+      "description": "리드 — 모든 테이블 접근 가능. 시크릿 하드코딩/파괴적 명령만 차단."
+    }
+  }
+}

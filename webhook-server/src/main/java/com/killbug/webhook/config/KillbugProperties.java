@@ -30,8 +30,6 @@ public class KillbugProperties {
     }
 
     public List<String> validTeamKeys() {
-        return features.stream()
-                .map(Feature::getLinearTeamKey)
-                .toList();
+        return features.stream().map(Feature::getLinearTeamKey).toList();
     }
 }

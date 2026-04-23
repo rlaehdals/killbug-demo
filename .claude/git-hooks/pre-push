@@ -1,0 +1,114 @@
+#!/bin/sh
+# =============================================================================
+# [하네스 무결성] Git pre-push hook
+#
+# 하네스 파일이 변경되었으나 체크섬이 갱신되지 않은 경우 push를 차단한다.
+# Claude Code뿐 아니라 수동 수정도 감지한다.
+#
+# 설치: bash .claude/scripts/setup-hooks.sh
+# =============================================================================
+
+PROJECT_DIR="$(git rev-parse --show-toplevel)"
+MANIFEST="$PROJECT_DIR/.claude/harness-checksums.json"
+
+# 보호 대상 파일 목록 (update-checksums.py의 HARNESS_FILES와 동일)
+HARNESS_FILES="
+.claude/settings.json
+.claude/hooks/guardrail-check.py
+.claude/hooks/data-governance-check.py
+.claude/hooks/plan-gate.py
+.claude/hooks/code-style-check.py
+.claude/hooks/output-verify.py
+.claude/hooks/feedback-loop.py
+.claude/hooks/audit.py
+.claude/hooks/session-start.py
+.claude/hooks/stop-final-check.py
+.claude/scripts/api-spec-update.py
+.claude/scripts/update-checksums.py
+.claude/scripts/setup-hooks.sh
+.claude/governance/access-policy.json
+.claude/agents/task-planner.md
+.claude/agents/code-reviewer.md
+.claude/agents/change-validator.md
+.claude/agents/performance-checker.md
+.claude/agents/security-auditor.md
+.claude/agents/harness-doctor.md
+.claude/agents/test-generator.md
+.claude/agents/dependency-checker.md
+.claude/rules/java-spring-conventions.md
+.claude/rules/code-templates.md
+.claude/rules/jpa-conventions.md
+.claude/rules/database-schema.md
+.claude/rules/api-spec-guide.md
+.claude/git-hooks/pre-push
+.claude/commands/setup.md
+CLAUDE.md
+"
+
+# SHA-256 도구 선택
+if command -v shasum >/dev/null 2>&1; then
+    SHA_CMD="shasum -a 256"
+elif command -v sha256sum >/dev/null 2>&1; then
+    SHA_CMD="sha256sum"
+else
+    echo "ERROR: SHA-256 도구를 찾을 수 없습니다 (shasum 또는 sha256sum 필요)" >&2
+    exit 1
+fi
+
+# 매니페스트 존재 확인
+if [ ! -f "$MANIFEST" ]; then
+    echo "================================================================" >&2
+    echo " PUSH BLOCKED: 하네스 체크섬 매니페스트가 없습니다." >&2
+    echo " 실행: python3 .claude/scripts/update-checksums.py" >&2
+    echo " 그리고: git add .claude/harness-checksums.json && git commit" >&2
+    echo "================================================================" >&2
+    exit 1
+fi
+
+# 파일별 체크섬 비교
+MISMATCHED=""
+MISSING=""
+
+for file in $HARNESS_FILES; do
+    filepath="$PROJECT_DIR/$file"
+    if [ ! -f "$filepath" ]; then
+        MISSING="$MISSING  $file\n"
+        continue
+    fi
+
+    actual_hash=$($SHA_CMD "$filepath" | awk '{print $1}')
+    expected_hash=$(python3 -c "
+import json
+with open('$MANIFEST') as f:
+    m = json.load(f)
+print(m.get('files', {}).get('$file', ''))
+")
+
+    if [ "$actual_hash" != "$expected_hash" ]; then
+        MISMATCHED="$MISMATCHED  $file\n"
+    fi
+done
+
+# 결과 출력
+if [ -n "$MISSING" ] || [ -n "$MISMATCHED" ]; then
+    echo "================================================================" >&2
+    echo " PUSH BLOCKED: 하네스 무결성 검증 실패" >&2
+    echo "================================================================" >&2
+    if [ -n "$MISMATCHED" ]; then
+        echo "" >&2
+        echo " 체크섬 불일치 (파일이 변경되었으나 체크섬 미갱신):" >&2
+        printf "$MISMATCHED" >&2
+    fi
+    if [ -n "$MISSING" ]; then
+        echo "" >&2
+        echo " 누락된 하네스 파일:" >&2
+        printf "$MISSING" >&2
+    fi
+    echo "" >&2
+    echo " 해결: python3 .claude/scripts/update-checksums.py" >&2
+    echo " 그리고: git add .claude/harness-checksums.json && git commit" >&2
+    echo "================================================================" >&2
+    exit 1
+fi
+
+exit 0

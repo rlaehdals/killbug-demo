@@ -28,10 +28,11 @@ public class ClaudeCodeRunner {
             ProcessBuilder pb = new ProcessBuilder(
                     "claude",
                     "--print",
-                    "--output-format", "json",
-                    "--max-turns", String.valueOf(properties.getClaudeCode().getMaxTurns()),
-                    prompt
-            );
+                    "--output-format",
+                    "json",
+                    "--max-turns",
+                    String.valueOf(properties.getClaudeCode().getMaxTurns()),
+                    prompt);
             pb.environment().put("CLAUDE_CODE_HEADLESS", "1");
             pb.redirectInput(ProcessBuilder.Redirect.from(new java.io.File("/dev/null")));
 
@@ -43,11 +44,11 @@ public class ClaudeCodeRunner {
                     if (!err.isBlank()) {
                         log.warn("[claude] stderr: {}", err.trim());
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             });
 
-            boolean finished = process.waitFor(
-                    properties.getClaudeCode().getTimeoutSeconds(), TimeUnit.SECONDS);
+            boolean finished = process.waitFor(properties.getClaudeCode().getTimeoutSeconds(), TimeUnit.SECONDS);
 
             String output;
             if (!finished) {

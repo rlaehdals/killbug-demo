@@ -14,7 +14,6 @@ import lombok.ToString;
 @Getter
 @ToString
 public enum Response {
-
     OK(HttpStatus.OK, SpecificStatus.OK);
 
     private final HttpStatus httpStatus;
@@ -26,13 +25,11 @@ public enum Response {
     }
 
     public ResponseEntity getApiResponse(Object o) {
-        return ResponseEntity
-                .status(this.httpStatus)
+        return ResponseEntity.status(this.httpStatus)
                 .body(ApiResponse.builder()
                         .message(this.specificStatus.name())
                         .sendTime(ZonedDateTime.now(ZoneOffset.UTC))
                         .data(o)
-                        .build()
-                );
+                        .build());
     }
 }

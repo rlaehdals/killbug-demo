@@ -24,8 +24,8 @@ public class SlackController {
     public Map<String, Object> handleSlackEvent(
             @RequestBody String rawBody,
             @RequestHeader(value = "X-Slack-Request-Timestamp", required = false) String timestamp,
-            @RequestHeader(value = "X-Slack-Signature", required = false) String signature
-    ) throws Exception {
+            @RequestHeader(value = "X-Slack-Signature", required = false) String signature)
+            throws Exception {
         JsonNode body = objectMapper.readTree(rawBody);
 
         if ("url_verification".equals(body.path("type").asText())) {

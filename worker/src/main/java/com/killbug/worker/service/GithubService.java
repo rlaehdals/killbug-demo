@@ -18,17 +18,21 @@ public class GithubService {
 
     private final WorkerProperties properties;
 
-    public String createDraftPr(File cwd, String title, String body,
-                                 String baseBranch, String headBranch) {
+    public String createDraftPr(File cwd, String title, String body, String baseBranch, String headBranch) {
         try {
             ProcessBuilder pb = new ProcessBuilder(List.of(
-                    "gh", "pr", "create",
+                    "gh",
+                    "pr",
+                    "create",
                     "--draft",
-                    "--title", title,
-                    "--body", body,
-                    "--base", baseBranch,
-                    "--head", headBranch
-            ));
+                    "--title",
+                    title,
+                    "--body",
+                    body,
+                    "--base",
+                    baseBranch,
+                    "--head",
+                    headBranch));
             pb.directory(cwd);
             pb.redirectErrorStream(true);
 
