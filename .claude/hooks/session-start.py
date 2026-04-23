@@ -135,7 +135,7 @@ def main():
 
     # ── 알려진 실패 테스트 ──
     failing_tests = "(없음)"
-    failing_tests_file = os.path.join(project_dir, ".claude", ".failing-tests")
+    failing_tests_file = os.path.join(project_dir, ".private", ".failing-tests")
     if os.path.exists(failing_tests_file):
         with open(failing_tests_file) as f:
             failing_tests = f.read().strip() or "(없음)"
@@ -165,7 +165,7 @@ def main():
 
     # ── 피드백 루프: 과거 세션 교훈 ──
     learnings = "(없음)"
-    learnings_file = os.path.join(project_dir, ".claude", ".learnings")
+    learnings_file = os.path.join(project_dir, ".private", ".learnings")
     if os.path.exists(learnings_file):
         with open(learnings_file) as f:
             content = f.read().strip()
@@ -181,8 +181,17 @@ def main():
     for i, (item, status, note) in enumerate(health_results, 1):
         health_table += f"| {i} | {item} | {status} | {note} |\n"
 
+    # ── .private 디렉토리 생성 ──
+    os.makedirs(os.path.join(project_dir, ".private"), exist_ok=True)
+
+    # ── 세션 시작 시 플랜 상태 초기화 ──
+    plan_file = os.path.join(project_dir, ".private", ".task-plan-established")
+    if os.path.exists(plan_file):
+        os.remove(plan_file)
+
+
     # ── 세션 편집 카운터 초기화 ──
-    counter_file = os.path.join(project_dir, ".claude", ".edit-count")
+    counter_file = os.path.join(project_dir, ".private", ".edit-count")
     with open(counter_file, "w") as f:
         f.write("0")
 

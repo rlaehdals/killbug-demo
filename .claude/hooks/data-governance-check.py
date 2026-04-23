@@ -19,7 +19,7 @@ _tool_input = {}
 
 def log_block(reason):
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
-    audit_dir = os.path.join(project_dir, ".claude", "audit")
+    audit_dir = os.path.join(project_dir, ".private", "audit")
     os.makedirs(audit_dir, exist_ok=True)
 
     input_summary = json.dumps(_tool_input, ensure_ascii=False)

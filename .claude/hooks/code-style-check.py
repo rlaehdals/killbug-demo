@@ -45,8 +45,8 @@ def check_conventions(content):
 
 def track_edits_and_trigger(file_path, project_dir):
     """세션 내 수정된 Java 파일 수를 추적하고, 임계값 초과 시 리뷰 트리거."""
-    counter_file = os.path.join(project_dir, ".claude", ".edit-count")
-    edited_files_file = os.path.join(project_dir, ".claude", ".edited-files")
+    counter_file = os.path.join(project_dir, ".private", ".edit-count")
+    edited_files_file = os.path.join(project_dir, ".private", ".edited-files")
 
     # 현재까지 수정된 파일 목록 로드
     edited_files = set()

@@ -39,7 +39,7 @@ def main():
         return
 
     # Debounce: 마지막 체크 이후 충분한 시간이 지났는지 확인
-    marker_file = os.path.join(project_dir, ".claude", ".last-compile-check")
+    marker_file = os.path.join(project_dir, ".private", ".last-compile-check")
     now = time.time()
 
     if os.path.exists(marker_file):

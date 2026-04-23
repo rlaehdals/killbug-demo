@@ -9,7 +9,7 @@ from datetime import datetime
 
 def log_block(tool_name, tool_input, reason):
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
-    audit_dir = os.path.join(project_dir, ".claude", "audit")
+    audit_dir = os.path.join(project_dir, ".private", "audit")
     os.makedirs(audit_dir, exist_ok=True)
 
     input_summary = json.dumps(tool_input, ensure_ascii=False)

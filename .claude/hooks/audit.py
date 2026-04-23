@@ -42,7 +42,7 @@ def main():
 
     # 감사 디렉토리 생성
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
-    audit_dir = os.path.join(project_dir, ".claude", "audit")
+    audit_dir = os.path.join(project_dir, ".private", "audit")
     os.makedirs(audit_dir, exist_ok=True)
 
     # 일별 JSONL 파일에 추가

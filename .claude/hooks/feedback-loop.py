@@ -33,7 +33,7 @@ def main():
 
     # .learnings 파일에 추가
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
-    learnings_file = os.path.join(project_dir, ".claude", ".learnings")
+    learnings_file = os.path.join(project_dir, ".private", ".learnings")
 
     # 기존 교훈 읽기
     existing = []

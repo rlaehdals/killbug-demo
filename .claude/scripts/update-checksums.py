@@ -13,9 +13,10 @@ from datetime import datetime, timezone
 HARNESS_FILES = [
     # settings
     ".claude/settings.json",
-    # hooks (8)
+    # hooks (9)
     ".claude/hooks/guardrail-check.py",
     ".claude/hooks/data-governance-check.py",
+    ".claude/hooks/plan-gate.py",
     ".claude/hooks/code-style-check.py",
     ".claude/hooks/output-verify.py",
     ".claude/hooks/feedback-loop.py",
@@ -28,8 +29,11 @@ HARNESS_FILES = [
     ".claude/scripts/setup-hooks.sh",
     # governance (1)
     ".claude/governance/access-policy.json",
-    # agents (5)
+    # agents (8)
+    ".claude/agents/task-planner.md",
     ".claude/agents/code-reviewer.md",
+    ".claude/agents/change-validator.md",
+    ".claude/agents/performance-checker.md",
     ".claude/agents/security-auditor.md",
     ".claude/agents/harness-doctor.md",
     ".claude/agents/test-generator.md",
@@ -42,6 +46,8 @@ HARNESS_FILES = [
     ".claude/rules/api-spec-guide.md",
     # git-hooks (1)
     ".claude/git-hooks/pre-push",
+    # commands (1)
+    ".claude/commands/setup.md",
     # project root
     "CLAUDE.md",
 ]

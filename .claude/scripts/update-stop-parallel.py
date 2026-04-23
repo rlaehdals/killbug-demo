@@ -1,4 +1,22 @@
 #!/usr/bin/env python3
+"""
+stop-final-check.py 병렬 실행 업그레이드
+
+에이전트 트리거를 개별 메시지 → 하나로 묶어서 "병렬로 실행하세요" 안내.
+빌드 실패는 별도로 분리 (빌드는 먼저 해결해야 함).
+"""
+import os
+
+PROJECT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+HOOKS = os.path.join(PROJECT, ".claude", "hooks")
+
+
+def main():
+    print("=== stop-final-check 병렬 실행 업그레이드 ===\n")
+
+    stop_hook = os.path.join(HOOKS, "stop-final-check.py")
+
+    new_content = r'''#!/usr/bin/env python3
 # =============================================================================
 # [Stop Gate] Stop Hook
 # 세션 종료 전:
@@ -241,6 +259,16 @@ def main():
             tf_path = os.path.join(project_dir, ".private", tf)
             if os.path.exists(tf_path):
                 os.remove(tf_path)
+
+
+if __name__ == "__main__":
+    main()
+'''
+
+    with open(stop_hook, "w") as f:
+        f.write(new_content)
+    print("  [OK] stop-final-check.py 교체 완료")
+    print("\n=== 완료. 체크섬 갱신 필요: python3 .claude/scripts/update-checksums.py ===")
 
 
 if __name__ == "__main__":
