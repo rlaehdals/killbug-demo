@@ -34,12 +34,17 @@ def check_harness_health(project_dir):
         ".claude/hooks/audit.py",
         ".claude/hooks/stop-final-check.py",
         ".claude/scripts/api-spec-update.py",
+        ".claude/references/code-templates.md",
+        ".claude/references/java-spring-conventions.md",
+        ".claude/references/jpa-conventions.md",
+        ".claude/references/database-schema.md",
+        ".claude/references/harness-guide.md",
     ]
     missing = [f for f in hook_files if not os.path.exists(os.path.join(project_dir, f))]
     if missing:
         results.append(("훅 파일", "MISSING", ", ".join(missing)))
     else:
-        results.append(("훅 파일 (9개)", "OK", ""))
+        results.append(("훅 파일 (9개) + 참조 (5개)", "OK", ""))
 
     # ── 2. deny 규칙 확인 ──
     settings_file = os.path.join(project_dir, ".claude", "settings.json")
@@ -50,6 +55,7 @@ def check_harness_health(project_dir):
         required_denys = [
             "Edit(.claude/settings.json)",
             "Write(.claude/hooks/**)",
+            "Write(.claude/references/**)",
             "Edit(CLAUDE.md)",
         ]
         inactive = []

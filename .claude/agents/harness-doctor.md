@@ -24,6 +24,11 @@
 - `.claude/agents/harness-doctor.md`
 - `.claude/agents/test-generator.md`
 - `.claude/agents/dependency-checker.md`
+- `.claude/references/code-templates.md`
+- `.claude/references/java-spring-conventions.md`
+- `.claude/references/jpa-conventions.md`
+- `.claude/references/database-schema.md`
+- `.claude/references/harness-guide.md`
 
 ### 2. settings.json deny 규칙 확인
 
@@ -32,6 +37,7 @@
 - `Edit(.claude/hooks/**)`, `Write(.claude/hooks/**)`
 - `Edit(.claude/governance/**)`, `Write(.claude/governance/**)`
 - `Edit(.claude/rules/**)`, `Write(.claude/rules/**)`
+- `Edit(.claude/references/**)`, `Write(.claude/references/**)`
 - `Edit(CLAUDE.md)`, `Write(CLAUDE.md)`
 
 ### 3. 체크섬 무결성
@@ -63,7 +69,7 @@ Controller 파일의 수정 시간이 spec 파일보다 최신이면 "동기화 
 
 | # | 항목 | 상태 | 비고 |
 |---|------|------|------|
-| 1 | 훅 파일 (9개) + 에이전트 (5개) | OK / MISSING | 누락 파일 목록 |
+| 1 | 훅 파일 (9개) + 에이전트 (5개) + 참조 (5개) | OK / MISSING | 누락 파일 목록 |
 | 2 | deny 규칙 | OK / WARN | 비활성 규칙 목록 |
 | 3 | 체크섬 무결성 | OK / TAMPERED | 불일치 파일 |
 | 4 | git hooks | OK / NOT INSTALLED | |

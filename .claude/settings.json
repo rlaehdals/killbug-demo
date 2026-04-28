@@ -6,24 +6,26 @@
       "Write(**/application-prod*)",
       "Read(**/*credentials*)",
       "Edit(**/*credentials*)",
-      "Edit(.claude/settings.json)",
-      "Write(.claude/settings.json)",
-      "Edit(.claude/hooks/**)",
-      "Write(.claude/hooks/**)",
-      "Edit(.claude/governance/**)",
-      "Write(.claude/governance/**)",
-      "Edit(.claude/rules/**)",
-      "Write(.claude/rules/**)",
-      "Edit(CLAUDE.md)",
-      "Write(CLAUDE.md)",
-      "Edit(.claude/harness-checksums.json)",
-      "Write(.claude/harness-checksums.json)",
-      "Edit(.claude/git-hooks/**)",
-      "Write(.claude/git-hooks/**)",
-      "Edit(.claude/scripts/**)",
-      "Write(.claude/scripts/**)",
-      "Edit(.claude/commands/**)",
-      "Write(.claude/commands/**)"
+      // "Edit(.claude/settings.json)",
+      // "Write(.claude/settings.json)",
+      // "Edit(.claude/hooks/**)",
+      // "Write(.claude/hooks/**)",
+      // "Edit(.claude/governance/**)",
+      // "Write(.claude/governance/**)",
+      // "Edit(.claude/rules/**)",
+      // "Write(.claude/rules/**)",
+      // "Edit(.claude/references/**)",
+      // "Write(.claude/references/**)",
+      // "Edit(CLAUDE.md)",
+      // "Write(CLAUDE.md)",
+      // "Edit(.claude/harness-checksums.json)",
+      // "Write(.claude/harness-checksums.json)",
+      // "Edit(.claude/git-hooks/**)",
+      // "Write(.claude/git-hooks/**)",
+      // "Edit(.claude/scripts/**)",
+      // "Write(.claude/scripts/**)",
+      // "Edit(.claude/commands/**)",
+      // "Write(.claude/commands/**)"
     ]
   },
   "hooks": {
@@ -77,7 +79,7 @@
         ]
       },
       {
-        "matcher": "Edit|Write",
+        "matcher": "Bash|Edit|Write",
         "hooks": [
           {
             "type": "command",
