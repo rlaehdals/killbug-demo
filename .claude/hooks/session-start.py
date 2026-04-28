@@ -237,7 +237,7 @@ def main():
 - 상세한 패턴은 .claude/rules/ 참조"""
 
     output = {"hookSpecificOutput": context}
-    print(json.dumps(output))
+    print(output)
 
 
 if __name__ == "__main__":
