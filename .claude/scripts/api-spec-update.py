@@ -353,17 +353,31 @@ def gen_openapi(endpoints, dtos):
         "paths:",
     ]
 
-    by_path = {}
+    # (path, method) 단위로 중복 제거 — 정보가 더 많은 쪽 우선
+    deduped = {}
     for ep in endpoints:
-        by_path.setdefault(ep["path"], []).append(ep)
+        m = ep["method"].lower()
+        key = (ep["path"], m)
+        if key not in deduped:
+            deduped[key] = ep
+        else:
+            existing = deduped[key]
+            if (ep.get("response_dto") and not existing.get("response_dto")) or \
+               len(ep["params"]) > len(existing["params"]):
+                deduped[key] = ep
 
-    for path, eps in sorted(by_path.items()):
+    by_path = {}
+    for (path, method), ep in deduped.items():
+        by_path.setdefault(path, []).append((method, ep))
+
+    for path in sorted(by_path):
         L.append(f"  {path}:")
-        for ep in eps:
-            m = ep["method"].lower()
+        for m, ep in sorted(by_path[path]):
             L.append(f"    {m}:")
             L.append(f"      operationId: {ep['handler'].replace('.', '_')}")
             L.append(f"      summary: {ep['handler']}")
+            L.append(f"      tags:")
+            L.append(f"        - {ep['module']}")
 
             # Parameters (path, query, header)
             non_body = [p for p in ep["params"] if p["location"] != "body"]
@@ -432,13 +446,26 @@ def gen_openapi(endpoints, dtos):
 
 # ─── 메인 ───────────────────────────────────────────────
 
+def is_bash_delete_relevant(command):
+    """Bash rm 명령이 Controller/DTO 파일을 삭제하는지 확인."""
+    if not re.search(r'\brm\b', command):
+        return False
+    return any(p.lstrip("/") in command for p in TRIGGER_PATHS)
+
+
 def main():
     hook_input = json.loads(sys.stdin.read())
+    tool_name = hook_input.get("tool_name", "")
     tool_input = hook_input.get("tool_input", {})
-    file_path = tool_input.get("file_path", "")
 
-    if not is_relevant(file_path):
-        return
+    if tool_name == "Bash":
+        command = tool_input.get("command", "")
+        if not is_bash_delete_relevant(command):
+            return
+    else:
+        file_path = tool_input.get("file_path", "")
+        if not is_relevant(file_path):
+            return
 
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
     endpoints, dtos = scan_project(project_dir)

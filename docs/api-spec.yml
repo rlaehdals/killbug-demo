@@ -11,12 +11,8 @@ paths:
     get:
       operationId: WebhookController_getHealth
       summary: WebhookController.getHealth
-      responses:
-        '200':
-          description: OK
-    get:
-      operationId: LinearWebhookController_getHealth
-      summary: LinearWebhookController.getHealth
+      tags:
+        - worker
       responses:
         '200':
           description: OK
@@ -24,18 +20,8 @@ paths:
     post:
       operationId: WebhookController_handleLinearWebhook
       summary: WebhookController.handleLinearWebhook
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-      responses:
-        '200':
-          description: OK
-    post:
-      operationId: LinearWebhookController_handleLinearWebhook
-      summary: LinearWebhookController.handleLinearWebhook
+      tags:
+        - worker
       requestBody:
         required: true
         content:
@@ -49,6 +35,8 @@ paths:
     get:
       operationId: RoleDataController_handleList
       summary: RoleDataController.handleList
+      tags:
+        - webhook-server
       parameters:
         - name: role
           in: path
@@ -65,6 +53,8 @@ paths:
     post:
       operationId: RoleDataController_handleCreate
       summary: RoleDataController.handleCreate
+      tags:
+        - webhook-server
       parameters:
         - name: role
           in: path
@@ -88,6 +78,8 @@ paths:
     get:
       operationId: SeniorReviewController_handleSearch
       summary: SeniorReviewController.handleSearch
+      tags:
+        - webhook-server
       parameters:
         - name: module
           in: query
@@ -110,6 +102,8 @@ paths:
     post:
       operationId: SlackCommandController_handleCommand
       summary: SlackCommandController.handleCommand
+      tags:
+        - webhook-server
       parameters:
         - name: X-Slack-Request-Timestamp
           in: header
@@ -134,6 +128,8 @@ paths:
     post:
       operationId: SlackController_handleSlackEvent
       summary: SlackController.handleSlackEvent
+      tags:
+        - webhook-server
       parameters:
         - name: X-Slack-Request-Timestamp
           in: header

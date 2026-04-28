@@ -40,6 +40,11 @@ HARNESS_FILES="
 .claude/rules/jpa-conventions.md
 .claude/rules/database-schema.md
 .claude/rules/api-spec-guide.md
+.claude/references/code-templates.md
+.claude/references/java-spring-conventions.md
+.claude/references/jpa-conventions.md
+.claude/references/database-schema.md
+.claude/references/harness-guide.md
 .claude/git-hooks/pre-push
 .claude/commands/setup.md
 CLAUDE.md

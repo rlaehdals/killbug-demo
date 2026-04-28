@@ -44,6 +44,12 @@ HARNESS_FILES = [
     ".claude/rules/jpa-conventions.md",
     ".claude/rules/database-schema.md",
     ".claude/rules/api-spec-guide.md",
+    # references (5)
+    ".claude/references/code-templates.md",
+    ".claude/references/java-spring-conventions.md",
+    ".claude/references/jpa-conventions.md",
+    ".claude/references/database-schema.md",
+    ".claude/references/harness-guide.md",
     # git-hooks (1)
     ".claude/git-hooks/pre-push",
     # commands (1)
