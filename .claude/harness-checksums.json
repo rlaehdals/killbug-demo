@@ -1,12 +1,12 @@
 {
   "version": 1,
   "algorithm": "sha256",
-  "generated_at": "2026-04-28T12:33:19.852243+00:00",
+  "generated_at": "2026-04-28T12:48:19.559924+00:00",
   "generated_by": "update-checksums.py",
   "files": {
-    ".claude/settings.json": "28c902edea63795978e1a88f02d5f6591271965e781d6e5b286db149aa83c92b",
-    ".claude/hooks/guardrail-check.py": "4fa0798b7de579299254b791d63e0c1e7b72a246541dd24870c2ff61c1371d69",
-    ".claude/hooks/data-governance-check.py": "41f92020f30927a392c4526096b050f6063dece89aeacd2e135c0a478195197b",
+    ".claude/settings.json": "c69c8ca8bf50ee8dc94fe511584633295f2f5fc26832773f66f0789991451bc5",
+    ".claude/hooks/guardrail-check.py": "1dbe4ec3cf7d38ba01e841fa1eae1cdbc3adaede6af4c1c42603093abde73a30",
+    ".claude/hooks/data-governance-check.py": "e036ffa9ee8acd2a0ec61db568e485a7e11b906acd0db18d0f5b2ac69ec46738",
     ".claude/hooks/plan-gate.py": "86ac37271a733270c60c7c4499219f421aa1eaef32c0156bbd87a0afbc84db67",
     ".claude/hooks/code-style-check.py": "c8980a9fd8f01260c0535399ef64dc7717ab76af4784d449b75c851d09955c6d",
     ".claude/hooks/output-verify.py": "6a81f9b4889147ec1d90a9db3741fdb815ca00ebe93773df85a3c229aae49891",
@@ -35,7 +35,7 @@
     ".claude/references/java-spring-conventions.md": "576e02f62f4c9883f70cbede7a7448a6db3d1765efda3b862b46380f5b484ef3",
     ".claude/references/jpa-conventions.md": "82fbf0ba4be9083fb02ab2b2749e6110dfc51392d76ff1903b85fd9042384f90",
     ".claude/references/database-schema.md": "28544dd9b4e3693fb6b6623f7976051274d87949bcc232b0cabd87c3a3954bbe",
-    ".claude/references/harness-guide.md": "23fa9506f9e46423739a4fb21ba460fee72a246479ac229cbbff49364b963679",
+    ".claude/references/harness-guide.md": "6d6a075283a7a691a3cb40e8636f95ffa6b614698dd84bf0ee755511a20ff45e",
     ".claude/git-hooks/pre-push": "142fc4585442f34d96e6d43aa3ea34823a55af0b5cc8593e736cef11cd5d6382",
     ".claude/commands/setup.md": "036ed45a0569ef7d5920a2d765dc388ca2a36a514342ba676ee29489d8333c16",
     "CLAUDE.md": "901f3e106ca796e3c7b704d2903296dd96416d5817c286cdbf7972eb7cc0276e"

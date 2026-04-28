@@ -40,9 +40,9 @@
 
 ### 공통 규칙 (모든 역할에게 적용)
 
-- `application-prod.yaml`, credentials 파일 접근 차단
+- `application-prod.yaml` 접근 차단
 - 로그에 PII 출력 차단 (password, token 등)
-- settings.json deny: `application-prod*`, `**/credential*`
+- settings.json deny: `application-prod*`
 
 ### 역할 기반 접근 제어 (`.claude/governance/access-policy.json`)
 

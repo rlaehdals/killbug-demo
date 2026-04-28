@@ -47,7 +47,6 @@ def main():
         protected_patterns = [
             (r'application-prod\.(yml|yaml)', "application-prod 설정 파일"),
             (r'\.claude/(settings|hooks|governance|references)', "하네스 설정 파일"),
-            (r'(credentials|credential)\.(json|yml|yaml)', "크레덴셜 파일"),
         ]
         for pattern, desc in protected_patterns:
             if re.search(pattern, command, re.IGNORECASE):

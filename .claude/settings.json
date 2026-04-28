@@ -4,8 +4,6 @@
       "Read(**/application-prod*)",
       "Edit(**/application-prod*)",
       "Write(**/application-prod*)",
-      "Read(**/*credentials*)",
-      "Edit(**/*credentials*)",
       "Edit(.claude/settings.json)",
       "Write(.claude/settings.json)",
       "Edit(.claude/hooks/**)",

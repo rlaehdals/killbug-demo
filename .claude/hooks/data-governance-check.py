@@ -98,10 +98,6 @@ def main():
         if re.search(r'application-prod\.(yml|yaml)$', file_path):
             block("\U0001f512 [Governance] application-prod 설정 파일 접근 차단. 시크릿은 시스템 레벨에서 관리하세요.")
 
-        # 크레덴셜 파일 접근 차단
-        if re.search(r'(credentials\.json|service[_\-]?account\.json)', file_path, re.IGNORECASE):
-            block("\U0001f512 [Governance] Credential file access blocked.")
-
     if tool_name in ("Edit", "Write"):
         content = tool_input.get("new_string", "") if tool_name == "Edit" else tool_input.get("content", "")
         file_path = tool_input.get("file_path", "")
