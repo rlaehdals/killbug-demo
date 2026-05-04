@@ -5,6 +5,27 @@ plugins {
 subprojects {
     apply plugin: 'com.diffplug.spotless'
 
+    pluginManager.withPlugin('java') {
+        apply plugin: 'jacoco'
+
+        jacoco {
+            toolVersion = '0.8.12'
+        }
+
+        tasks.named('test') {
+            finalizedBy jacocoTestReport
+        }
+
+        jacocoTestReport {
+            dependsOn test
+            reports {
+                xml.required = true
+                html.required = true
+                csv.required = false
+            }
+        }
+    }
+
     spotless {
         java {
             target 'src/**/*.java'

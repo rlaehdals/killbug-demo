@@ -5,10 +5,12 @@
 # 누가 실행해도 동일한 맥락에서 시작하게 만드는 핵심 장치.
 # =============================================================================
 import json
+import re
 import sys
 import subprocess
 import os
 import hashlib
+from datetime import UTC, datetime, timedelta
 
 
 def run(cmd, fallback="(없음)"):
@@ -33,6 +35,7 @@ def check_harness_health(project_dir):
         ".claude/hooks/feedback-loop.py",
         ".claude/hooks/audit.py",
         ".claude/hooks/stop-final-check.py",
+        ".claude/hooks/branch-protect-block.py",
         ".claude/scripts/api-spec-update.py",
         ".claude/references/code-templates.md",
         ".claude/references/java-spring-conventions.md",
@@ -107,9 +110,8 @@ def check_harness_health(project_dir):
 
     # ── 5. API 스펙 동기화 ──
     spec_md = os.path.join(project_dir, "docs", "api-spec.md")
-    spec_yml = os.path.join(project_dir, "docs", "api-spec.yml")
-    if os.path.exists(spec_md) and os.path.exists(spec_yml):
-        results.append(("API 스펙", "OK", "md + yml"))
+    if os.path.exists(spec_md):
+        results.append(("API 스펙", "OK", "md"))
     else:
         results.append(("API 스펙", "MISSING", "Controller 수정 시 자동 생성됨"))
 
@@ -124,6 +126,57 @@ def main():
     branch = run(["git", "branch", "--show-current"], "unknown")
     recent_commits = run(["git", "log", "--oneline", "-5"], "커밋 없음")
     unstaged = run(["git", "diff", "--stat"], "변경 없음")
+
+    # ── 브랜치 상태 경고 ──
+    branch_warnings = []
+
+    if branch == "main":
+        branch_warnings.append(
+            "현재 'main' 브랜치에 있습니다 (보호 브랜치). "
+            "feature 브랜치를 만들어 작업하세요."
+        )
+
+    try:
+        subprocess.run(
+            ["git", "fetch", "--quiet", "origin", "main"],
+            capture_output=True, text=True, timeout=10, check=False,
+        )
+        behind_result = subprocess.run(
+            ["git", "rev-list", "--count", "--first-parent", "origin/main", "^HEAD"],
+            capture_output=True, text=True, timeout=10, check=False,
+        )
+        if behind_result.returncode == 0:
+            behind = int(behind_result.stdout.strip())
+            if behind > 0:
+                branch_warnings.append(
+                    f"origin/main이 {behind}개 커밋 앞서 있습니다. "
+                    "rebase를 권장합니다: `git fetch origin main && git rebase origin/main`"
+                )
+    except Exception:
+        pass
+
+    if branch != "main" and branch != "HEAD" and branch != "unknown":
+        try:
+            reflog_result = subprocess.run(
+                ["git", "reflog", "show", "--date=iso-strict", branch],
+                capture_output=True, text=True, timeout=10, check=False,
+            )
+            if reflog_result.returncode == 0 and reflog_result.stdout.strip():
+                last_line = reflog_result.stdout.strip().splitlines()[-1]
+                match = re.search(r"@\{([^}]+)\}", last_line)
+                if match:
+                    opened_at = datetime.fromisoformat(match.group(1)).astimezone(UTC)
+                    age = datetime.now(UTC) - opened_at
+                    if age > timedelta(hours=24):
+                        hours = int(age.total_seconds() // 3600)
+                        branch_warnings.append(
+                            f"현재 브랜치가 {hours}시간째 열려 있습니다. "
+                            "main에 머지하거나 브랜치를 분할하는 것을 고려하세요."
+                        )
+        except Exception:
+            pass
+
+    branch_warning_text = "\n".join(branch_warnings) if branch_warnings else "(없음)"
 
     # ── 빌드 상태 확인 ──
     build_status = "확인 안 됨"
@@ -190,12 +243,6 @@ def main():
     # ── .private 디렉토리 생성 ──
     os.makedirs(os.path.join(project_dir, ".private"), exist_ok=True)
 
-    # ── 세션 시작 시 플랜 상태 초기화 ──
-    plan_file = os.path.join(project_dir, ".private", ".task-plan-established")
-    if os.path.exists(plan_file):
-        os.remove(plan_file)
-
-
     # ── 세션 편집 카운터 초기화 ──
     counter_file = os.path.join(project_dir, ".private", ".edit-count")
     with open(counter_file, "w") as f:
@@ -208,6 +255,8 @@ def main():
 {recent_commits}
 **변경 사항**:
 {unstaged}
+**브랜치 경고**:
+{branch_warning_text}
 **빌드 상태**: {build_status}
 **접근 레벨**: {role_display}
 **알려진 실패 테스트**: {failing_tests}
@@ -224,6 +273,7 @@ def main():
 | Layer | 역할 | 자동 실행 |
 |-------|------|----------|
 | **Session Start** | 컨텍스트 주입 + 하네스 진단 (지금 실행됨) | O |
+| **브랜치 보호** | main 브랜치 직접 수정 차단 (PreToolUse) | O |
 | **가드레일** | 위험 명령/시크릿 차단 (PreToolUse) | O |
 | **데이터 거버넌스** | 민감 파일/PII 차단 (PreToolUse) | O |
 | **코드 스타일** | 컨벤션 피드백 — 즉시 (PostToolUse) | O |

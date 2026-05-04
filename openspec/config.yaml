@@ -1,0 +1,35 @@
+schema: spec-driven
+
+context: |
+  Language: 한국어
+
+  ## 프로젝트
+  KillBug — Slack 에러 스레드 → Claude 분석 → Linear 티켓 → 자동 수정 Draft PR
+  Spring Boot 3.5 / Java 21 / Gradle 멀티모듈
+
+  ## 모듈
+  - webhook-server (8080): Slack/Linear 웹훅 수신, 스레드 분석, 티켓 생성
+  - worker (8081): 이슈 처리, worktree 기반 Claude Code 실행, Draft PR 생성
+
+  ## 계층 구조
+  Controller → Service → Client (건너뛰기 금지, 순환 참조 금지)
+
+  ## 기존 컨벤션
+  - @RequiredArgsConstructor DI, @Slf4j 로깅, Record DTO
+  - Entity: @Getter + @NoArgsConstructor(PROTECTED) + 생성자 @Builder
+  - 시크릿: ${ENV_VAR} 참조만 허용
+  - ProcessBuilder: 인자 분리 (셸 명령어 금지)
+
+rules:
+  proposal:
+    - 어떤 모듈(webhook-server/worker)에 영향을 주는지 명시
+    - 기존 Slack/Linear/GitHub 연동에 미치는 사이드이펙트 기술
+  specs:
+    - Given/When/Then 시나리오 작성
+    - 외부 API(Slack, Linear, GitHub) ��출이 포함되면 실패 시나리오 필수
+  design:
+    - Controller → Service → Client 계층 준수
+    - 새 엔드포인트는 docs/api-spec.md 갱신 계획 포함
+  tasks:
+    - 태스크 하나가 하나의 커밋 단위
+    - 테스트 작성 태스크를 별도로 분리

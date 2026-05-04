@@ -23,7 +23,11 @@
       "Edit(.claude/scripts/**)",
       "Write(.claude/scripts/**)",
       "Edit(.claude/commands/**)",
-      "Write(.claude/commands/**)"
+      "Write(.claude/commands/**)",
+      "Edit(.claude/skills/**)",
+      "Write(.claude/skills/**)",
+      "Edit(.claude/agents/**)",
+      "Write(.claude/agents/**)"
     ]
   },
   "hooks": {
@@ -39,6 +43,15 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/branch-protect-block.py"
+          }
+        ]
+      },
+      {
         "matcher": "Bash|Edit|Write",
         "hooks": [
           {
@@ -53,15 +66,6 @@
           {
             "type": "command",
             "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/data-governance-check.py"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/plan-gate.py"
           }
         ]
       }
@@ -91,6 +95,15 @@
           {
             "type": "command",
             "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/output-verify.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 $CLAUDE_PROJECT_DIR/.claude/hooks/commit-message-validator.py"
           }
         ]
       },

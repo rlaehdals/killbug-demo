@@ -84,6 +84,8 @@ Claude Code가 읽은 데이터는 외부 LLM API로 전송된다. 아래 패턴
 - 변경 검증 에이전트 (`change-validator.md`) — 논리적 정합성 독립 검증 (API 계약, 데이터 흐름, 트랜잭션, 의존성 방향)
 - 성능 검사 에이전트 (`performance-checker.md`) — 성능 안티패턴 탐지 (N+1, 무제한 조회, 리소스 누수, 동시성)
 - 테스트 생성 에이전트 (`test-generator.md`) — 변경 코드 JUnit 5 테스트 자동 생성
+- 커버리지 게이트 에이전트 (`test-coverage-gate.md`) — JaCoCo 기반 변경 파일 커버리지 검증 (80% 임계값)
+- 데드 코드 탐지 에이전트 (`dead-code-detector.md`) — 미사용 public 메서드/클래스 탐지
 - 의존성 검사 에이전트 (`dependency-checker.md`) — build.gradle 보안/호환성 검사
 
 **코드 리뷰 에이전트 평가 항목:**
@@ -93,9 +95,6 @@ Claude Code가 읽은 데이터는 외부 LLM API로 전송된다. 아래 패턴
 - 보안 취약점
 - 성능 영향
 
-**작업 계획 수립 (PreToolUse — `plan-gate.py`):**
-- 첫 Edit/Write 전에 `task-planner` 에이전트로 실행 계획 수립을 강제
-- `.private/.task-plan-established` 파일이 존재하면 통과 (세션 시작 시 자동 삭제 → 매 세션 플랜 수립 강제)
 - `.claude/` 내부 파일과 `*Test.java` 수정은 항상 허용
 - fail-open — 에러 시 차단하지 않음 (품질 영역)
 
@@ -140,23 +139,26 @@ SessionStart ──────────────────────�
   ▼
 PreToolUse ──── guardrail-check.py ──── [제어] 위험 명령/시크릿 차단
   │             data-governance-check.py ── [제어] 민감 파일/PII 차단
-  │             plan-gate.py ────────────── [개선] 첫 Edit/Write 전 플랜 수립 강제
-  ▼
+    ▼
 [도구 실행]
   │
   ▼
-PostToolUse ─── code-style-check.py ─── [제어] 컨벤션 피드백 (즉시) + 리뷰 트리거
-  │             api-spec-update.py ──── [개선] API 스펙 자동 갱신
-  │             output-verify.py ──────── [제어] Spotless 포매팅 + 컴파일 (debounce 30s)
-  │             feedback-loop.py ──────── [개선] 실패 교훈 축적
-  │             audit.py ──────────────── [감시] JSONL 감사 로그
+PostToolUse ─── code-style-check.py ──────── [제어] 컨벤션 피드백 (즉시) + 리뷰 트리거
+  │             api-spec-update.py ─────── [개선] API 스펙 자동 갱신
+  │             output-verify.py ─────────── [제어] Spotless 포매팅 + 컴파일 (debounce 30s)
+  │             commit-message-validator.py ─ [제어] Conventional Commits 검증 + 타입-파일 일관성
+  │             feedback-loop.py ─────────── [개선] 실패 교훈 축적
+  │             audit.py ─────────────────── [감시] JSONL 감사 로그
   ▼
 Stop ──────── stop-final-check.py ───── [제어] 보안 감사 트리거 (최대 3회)
   │                                      [개선] 테스트 생성 트리거 (소스 수정 + 테스트 미작성 시)
   │                                      [개선] 의존성 검사 트리거 (build.gradle 수정 시)
   │                                      [평가] 변경 검증 트리거 (Java 소스 3개+ 수정 시)
   │                                      [평가] 성능 검사 트리거 (Service/Repository/Entity 수정 시)
+  │                                      [평가] 커버리지 게이트 트리거 (JaCoCo 80% 미달 시)
+  │                                      [평가] 데드 코드 탐지 트리거 (미사용 메서드 감지 시)
   │                                      [제어] 빌드 검증
+  │                                      [감시] 세션 요약 생성 (.claude/session-logs/)
   │                                      [감시] 검증 통과 시 트리거 상태 초기화
   ▼
 [세션 종료]
