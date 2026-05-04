@@ -13,24 +13,29 @@ from datetime import datetime, timezone
 HARNESS_FILES = [
     # settings
     ".claude/settings.json",
-    # hooks (9)
+    # hooks (10)
     ".claude/hooks/guardrail-check.py",
     ".claude/hooks/data-governance-check.py",
-    ".claude/hooks/plan-gate.py",
     ".claude/hooks/code-style-check.py",
     ".claude/hooks/output-verify.py",
     ".claude/hooks/feedback-loop.py",
     ".claude/hooks/audit.py",
     ".claude/hooks/session-start.py",
     ".claude/hooks/stop-final-check.py",
+    ".claude/hooks/branch-protect-block.py",
+    ".claude/hooks/commit-message-validator.py",
+    # skills (2)
+    ".claude/skills/commit/SKILL.md",
+    ".claude/skills/commit/conventional-commits-spec.md",
+    # rules에 추가
+    ".claude/rules/design-principles.md",
     # scripts (3)
     ".claude/scripts/api-spec-update.py",
     ".claude/scripts/update-checksums.py",
     ".claude/scripts/setup-hooks.sh",
     # governance (1)
     ".claude/governance/access-policy.json",
-    # agents (8)
-    ".claude/agents/task-planner.md",
+    # agents (9)
     ".claude/agents/code-reviewer.md",
     ".claude/agents/change-validator.md",
     ".claude/agents/performance-checker.md",
@@ -38,6 +43,8 @@ HARNESS_FILES = [
     ".claude/agents/harness-doctor.md",
     ".claude/agents/test-generator.md",
     ".claude/agents/dependency-checker.md",
+    ".claude/agents/test-coverage-gate.md",
+    ".claude/agents/dead-code-detector.md",
     # rules (5)
     ".claude/rules/java-spring-conventions.md",
     ".claude/rules/code-templates.md",

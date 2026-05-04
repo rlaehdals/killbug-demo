@@ -46,18 +46,19 @@ Slack 에러 스레드 감지 -> Claude 분석 -> Linear 티켓 생성 -> 자동
 - @Slf4j 로거 (System.out 금지)
 - Record 타입으로 DTO 생성
 - application.yml 시크릿은 ${ENV_VAR} 참조
-- API 작업 시 docs/api-spec.yml을 먼저 참조
+- API 작업 시 docs/api-spec.md를 먼저 참조
 
 ### 에이전트
 
 | 에이전트 | 용도 | 호출 |
 |---------|------|------|
-| `task-planner` | 실행 계획 수립 | "플랜 세워줘" |
 | `code-reviewer` | 코드 리뷰 (50점) | "코드 리뷰해줘" / Java 5개+ 자동 |
 | `change-validator` | 논리적 정합성 검증 | "변경 검증해줘" / Stop 자동 |
 | `performance-checker` | 성능 안티패턴 탐지 | "성능 검사해줘" / Stop 자동 |
 | `security-auditor` | OWASP Top 10 감사 | "보안 감사해줘" / Stop 자동 |
 | `test-generator` | JUnit 5 테스트 생성 | "테스트 생성해줘" / Stop 자동 |
+| `test-coverage-gate` | JaCoCo 커버리지 검증 (80%) | "커버리지 검사해줘" / Stop 자동 |
+| `dead-code-detector` | 미사용 메서드/클래스 탐지 | "데드 코드 검사해줘" / Stop 자동 |
 | `dependency-checker` | 의존성 취약점 스캔 | "의존성 검사해줘" / Stop 자동 |
 | `harness-doctor` | 하네스 상태 진단 | "하네스 확인해줘" / SessionStart 자동 |
 
@@ -66,3 +67,9 @@ Slack 에러 스레드 감지 -> Claude 분석 -> Linear 티켓 생성 -> 자동
 | 커맨드 | 용도 |
 |--------|------|
 | `/setup` | 프로젝트 환경 자동 점검 + 설정 |
+| `/commit` | Conventional Commits 기반 커밋 생성 |
+| `/opsx:propose` | OpenSpec 변경 제안 + 아티팩트 생성 |
+| `/opsx:apply` | OpenSpec 태스크 구현 |
+| `/opsx:explore` | 설계 탐색 모드 (읽기만) |
+| `/opsx:archive` | 완료된 변경 아카이브 |
+| `/audit-dashboard` | 감사 로그 대시보드 생성 (드릴다운 상세 보기 지원) |

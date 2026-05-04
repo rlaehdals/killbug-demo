@@ -58,14 +58,14 @@ SessionStart ────────────────────── 
 PreToolUse
   ├── guardrail-check.py ────────── 위험 명령 / 시크릿 / Bash 우회 차단
   ├── data-governance-check.py ──── 공통 규칙 + 역할별 테이블 접근 + LLM 유출 방지
-  └── plan-gate.py ────────────────── 첫 Edit/Write 전 플랜 수립 강제
   ▼
 [도구 실행]
   ▼
 PostToolUse
   ├── code-style-check.py ──────── 컨벤션 피드백 (즉시) + 5개+ 파일 시 code-reviewer 트리거
-  ├── api-spec-update.py ───────── API 스펙 자동 갱신 (MD + OpenAPI YAML)
+  ├── api-spec-update.py ───────── API 스펙 자동 갱신 (MD)
   ├── output-verify.py ─────────── Spotless 포매팅 + 컴파일 검증 (debounce 30s)
+  ├── commit-message-validator.py ─ Conventional Commits 검증 + 타입-파일 일관성
   ├── feedback-loop.py ─────────── 실패 교훈 축적 → 다음 세션 주입
   └── audit.py ─────────────────── JSONL 감사 로그
   ▼
@@ -74,7 +74,10 @@ Stop ── stop-final-check.py ────── 보안 감사 트리거 (최�
   │                                  의존성 검사 트리거 (build.gradle 수정 시)
   │                                  변경 검증 트리거 (Java 소스 3개+ 수정 시)
   │                                  성능 검사 트리거 (Service/Repository/Entity 수정 시)
+  │                                  커버리지 게이트 트리거 (JaCoCo 80% 미달 시)
+  │                                  데드 코드 탐지 트리거 (미사용 메서드 감지 시)
   │                                  빌드 검증
+  │                                  세션 요약 생성 (.claude/session-logs/)
   │                                  검증 통과 시 트리거 상태 초기화
 ```
 
@@ -104,10 +107,10 @@ Stop ── stop-final-check.py ────── 보안 감사 트리거 (최�
 | 수단 | 역할 |
 |------|------|
 | `code-style-check.py` | `@Autowired`, `System.out`, `var` 등 컨벤션 피드백 (즉시) |
-| `api-spec-update.py` | Controller/DTO 수정 시 `docs/api-spec.md` + `api-spec.yml` 자동 갱신 |
+| `api-spec-update.py` | Controller/DTO 수정 시 `docs/api-spec.md` 자동 갱신 |
 | `output-verify.py` | Spotless(palantir-java-format) 포매팅 + incremental compile (debounce 30s) |
-| `plan-gate.py` | 첫 Edit/Write 전 task-planner 에이전트로 플랜 수립 강제 (fail-open) |
-| `stop-final-check.py` | 세션 종료 전: 보안 감사 + 테스트 생성 + 의존성 + 변경 검증 + 성능 검사 + 빌드 검증 |
+| `commit-message-validator.py` | Conventional Commits 형식 검증 + 커밋 타입-파일 일관성 검사 |
+| `stop-final-check.py` | 세션 종료 전: 보안 감사 + 테스트 + 커버리지 + 데드 코드 + 빌드 검증 + 세션 요약 |
 | `.claude/rules/*.md` | 핵심 규칙 slim 포인터 (상세 템플릿은 `.claude/references/`에서 on-demand 로드) |
 | 피드백 루프 | 실패 교훈 축적 → 다음 세션 주입 + 규칙 점진적 추가 |
 
@@ -139,12 +142,13 @@ python3 .claude/scripts/update-checksums.py # 체크섬 갱신
 │   ├── session-start.py          # 컨텍스트 주입 + harness-doctor 자동 진단
 │   ├── guardrail-check.py        # 위험 명령 / 시크릿 / Bash 우회 차단
 │   ├── data-governance-check.py  # 공통 + 역할별 + LLM 유출 방지
-│   ├── plan-gate.py              # 첫 Edit/Write 전 플랜 수립 강제
 │   ├── code-style-check.py       # 컨벤션 피드백 + code-reviewer 트리거
 │   ├── output-verify.py          # Spotless 포매팅 + 컴파일 검증
 │   ├── feedback-loop.py          # 실패 교훈 축적
 │   ├── audit.py                  # JSONL 감사 로그
-│   └── stop-final-check.py       # 보안 감사 + 테스트 + 의존성 + 변경 검증 + 성능 검사 + 빌드
+│   ├── stop-final-check.py       # 보안 감사 + 테스트 + 커버리지 + 데드 코드 + 빌드 + 세션 요약
+│   ├── branch-protect-block.py   # main 브랜치 직접 수정 차단
+│   └── commit-message-validator.py # Conventional Commits 검증 + 타입-파일 일관성
 ├── git-hooks/
 │   └── pre-push                  # 체크섬 무결성 검증
 ├── scripts/
@@ -152,13 +156,14 @@ python3 .claude/scripts/update-checksums.py # 체크섬 갱신
 │   ├── setup-hooks.sh            # git hook 설치
 │   └── update-checksums.py       # 체크섬 갱신
 ├── agents/
-│   ├── task-planner.md           # 자연어 → 실행 계획 변환 (plan-gate에서 자동 유도)
 │   ├── code-reviewer.md          # 코드 리뷰 (5개+ 파일 수정 시 자동 트리거)
 │   ├── change-validator.md       # 변경 정합성 검증 (Stop에서 Java 3개+ 수정 시)
 │   ├── performance-checker.md    # 성능 안티패턴 탐지 (Stop에서 Service/Repo/Entity 수정 시)
 │   ├── security-auditor.md       # 보안 감사 (Stop에서 자동 트리거, 최대 3회)
 │   ├── harness-doctor.md         # 하네스 진단 (SessionStart 자동 실행)
 │   ├── test-generator.md         # 테스트 생성 (Stop에서 소스 수정 + 테스트 미작성 시)
+│   ├── test-coverage-gate.md    # JaCoCo 커버리지 검증 (Stop에서 80% 미달 시)
+│   ├── dead-code-detector.md    # 미사용 메서드/클래스 탐지 (Stop에서 자동)
 │   └── dependency-checker.md     # 의존성 검사 (Stop에서 build.gradle 수정 시)
 ├── references/                      # 상세 컨벤션/템플릿 원본 (on-demand 로드)
 │   ├── code-templates.md
@@ -166,23 +171,37 @@ python3 .claude/scripts/update-checksums.py # 체크섬 갱신
 │   ├── jpa-conventions.md
 │   ├── database-schema.md
 │   └── harness-guide.md
-└── rules/                           # slim 포인터 (항상 로드, references/로 연결)
-    ├── java-spring-conventions.md
-    ├── code-templates.md
-    ├── jpa-conventions.md
-    ├── database-schema.md
-    └── api-spec-guide.md
+├── rules/                           # slim 포인터 (항상 로드, references/로 연결)
+│   ├── java-spring-conventions.md
+│   ├── code-templates.md
+│   ├── jpa-conventions.md
+│   ├── database-schema.md
+│   ├── design-principles.md
+│   └── api-spec-guide.md
+└── skills/                          # 슬래시 커맨드 스킬
+    ├── commit/                      # /commit - Conventional Commits
+    ├── openspec-propose/            # /opsx:propose
+    ├── openspec-apply-change/       # /opsx:apply
+    ├── openspec-explore/            # /opsx:explore
+    ├── openspec-archive-change/     # /opsx:archive
+    └── audit-dashboard/             # /audit-dashboard — 감사 로그 시각화 + 드릴다운
 
 .private/                            # 런타임 상태 파일 (.gitignore 대상)
 ├── .edit-count                      # 세션 편집 카운터
 ├── .edited-files                    # 수정된 파일 목록
-├── .task-plan-established           # 플랜 수립 플래그
 ├── .learnings                       # 실패 교훈 (세션 간 유지)
 ├── .failing-tests                   # 빌드 실패 기록
 ├── .*-triggered                     # 에이전트 트리거 상태
-└── audit/                           # JSONL 감사 로그
+└── audit/                           # JSONL 감사 로그 + dashboard.html
+
+.claude/session-logs/                # 세션 요약 로그 (.gitignore 대상)
+└── {YYYY-MM-DD}.md                  # 날짜별 세션 요약 (변경 파일, 테스트, 에이전트, 커밋)
 
 docs/
-├── api-spec.md                   # API 스펙 (Markdown, 사람용)
-└── api-spec.yml                  # API 스펙 (OpenAPI 3.0, Claude용)
+└── api-spec.md                   # API 스펙 (Markdown, 사람용)
+
+openspec/                           # OpenSpec 스펙 주도 개발
+├── config.yaml                  # 프로젝트 컨텍스트 + 룰
+├── specs/                       # 메인 스펙 (source of truth)
+└── changes/                     # 변경 제안 + 아티팩트
 ```
